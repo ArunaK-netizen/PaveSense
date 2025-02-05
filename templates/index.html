@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Real-Time Pothole Map</title>
+
+    <!-- Leaflet.js for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+    <!-- Proper CSS for the map -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        #map-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 550px; /* Ensures container has height */
+        }
+
+        #map {
+            height: 500px;
+            width: 80%;
+            max-width: 800px;
+            min-height: 500px; /* Ensures map is not collapsed */
+            border: 2px solid black;
+            border-radius: 10px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Real-Time Pothole Detection</h1>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
+    <script>
+        // Initialize the map
+        var map = L.map("map", {
+            center: [20.5937, 78.9629], // Centered in India
+            zoom: 5,
+            zoomControl: true
+        });
+
+        // Add OpenStreetMap tile layer
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Fixes map rendering issue
+        function fixMapSize() {
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 400);
+        }
+
+        // Ensure the map is properly sized when the page loads and resizes
+        window.onload = fixMapSize;
+        window.addEventListener("resize", fixMapSize);
+
+        // WebSocket connection to receive real-time pothole updates
+        var socket = io.connect("http://" + document.domain + ":" + location.port);
+
+        socket.on("update_map", function(data) {
+            var marker = L.marker([data.latitude, data.longitude], {
+                icon: L.icon({
+                    iconUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e0/RedDot.svg",
+                    iconSize: [15, 15],
+                    iconAnchor: [7, 7],
+                    popupAnchor: [0, -7]
+                })
+            }).addTo(map);
+            marker.bindPopup("<b>Pothole Detected!</b>").openPopup();
+        });
+    </script>
+
+</body>
+</html>
