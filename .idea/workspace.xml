@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Integrated Map Functionality">
+    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Corrected Sensor Data">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +38,7 @@
     "DefaultHtmlFileTemplate": "HTML File",
     "Python.app.executor": "Run",
     "Python.main.executor": "Run",
+    "Python.sensor_data.executor": "Run",
     "Python.test.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
@@ -94,7 +94,15 @@
       <option name="project" value="LOCAL" />
       <updated>1738772313693</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Corrected Sensor Data">
+      <option name="closed" value="true" />
+      <created>1738902367768</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1738902367768</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -111,6 +119,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Files added" />
     <MESSAGE value="Integrated Map Functionality" />
-    <option name="LAST_COMMIT_MESSAGE" value="Integrated Map Functionality" />
+    <MESSAGE value="Corrected Sensor Data" />
+    <option name="LAST_COMMIT_MESSAGE" value="Corrected Sensor Data" />
   </component>
 </project>
