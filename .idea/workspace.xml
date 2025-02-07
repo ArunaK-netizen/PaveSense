@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Files added">
-      <change afterPath="$PROJECT_DIR$/Compute_Speed.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Get_GPS_Location.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Process_Sensor_Data.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Update_map.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Integrated Map Functionality">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +42,8 @@
     "Python.test.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+    "last_opened_file_path": "S:/Coding/Projects/FileScanner",
+    "settings.editor.selected.configurable": "configurable.group.language"
   }
 }]]></component>
   <component name="SharedIndexes">
@@ -81,7 +78,23 @@
       <option name="project" value="LOCAL" />
       <updated>1738492928303</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Integrated Map Functionality">
+      <option name="closed" value="true" />
+      <created>1738772300582</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1738772300582</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Integrated Map Functionality">
+      <option name="closed" value="true" />
+      <created>1738772313693</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1738772313693</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -97,6 +110,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Files added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Files added" />
+    <MESSAGE value="Integrated Map Functionality" />
+    <option name="LAST_COMMIT_MESSAGE" value="Integrated Map Functionality" />
   </component>
 </project>
