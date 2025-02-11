@@ -1,30 +1,24 @@
 import websocket
 import json
-import pickle
 import numpy as np
-import pandas as pd
 import threading
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
-from geopy.distance import geodesic
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-# Load trained model
-print("🔄 Loading trained model...")
-with open('model.p', 'rb') as file:
-    pothole_data = pickle.load(file)
+# Threshold values for pothole detection
+ACCEL_Z_DROP_THRESHOLD = -2.5  # Large downward acceleration (falling into pothole)
+ACCEL_Z_RISE_THRESHOLD = 3.0   # Large upward acceleration (rising out of pothole)
+GYRO_THRESHOLD = 1.5           # High gyroscope variation indicating road impact
 
-classifier = pothole_data['classifier']
-feature_names = pothole_data.get("feature_names", None)
-
-threshold = 0  # Adjust threshold for pothole detection
+# Data buffers for recent sensor values
+sensor_data_buffer = {"accelerometer": [], "gyroscope": []}
 pothole_locations = []
-sensor_data_buffer = {"accelerometer": [], "gyroscope": [], "speed": []}
 lat, long = "13.0827", "80.2707"  # Default to Chennai
 
-print("✅ Model loaded successfully!")
+print("✅ Rule-Based Pothole Detection Active!")
 
 # WebSocket Sensor Event Handlers
 def on_accelerometer_event(values, timestamp):
@@ -35,11 +29,6 @@ def on_accelerometer_event(values, timestamp):
 def on_gyroscope_event(values, timestamp):
     print(f"📡 Gyroscope Data: {values} | Timestamp: {timestamp}")
     sensor_data_buffer["gyroscope"].append(values)
-    process_sensor_data()
-
-def on_speed_event(values, timestamp):
-    print(f"📡 Speed Data: {values} | Timestamp: {timestamp}")
-    sensor_data_buffer["speed"].append(values)
     process_sensor_data()
 
 # Sensor WebSocket Handler
@@ -82,22 +71,29 @@ class Sensor:
         thread = threading.Thread(target=self.make_websocket_connection)
         thread.start()
 
-# Process Incoming Sensor Data
+# Rule-Based Pothole Detection
 def process_sensor_data():
-    """ Processes sensor data and checks for potholes. """
+    """ Detects potholes based on sensor thresholds """
     global lat, long
 
-    if len(sensor_data_buffer["accelerometer"]) == 0 or len(sensor_data_buffer["gyroscope"]) == 0:
-        return  # Wait for enough sensor data before processing
+    if len(sensor_data_buffer["accelerometer"]) < 2 or len(sensor_data_buffer["gyroscope"]) < 1:
+        return  # Wait until enough sensor data is collected
 
-    # Convert sensor data into features for the model
-    input_features = preprocess_sensor_data(sensor_data_buffer)
+    # Get latest sensor readings
+    accel_current = np.array(sensor_data_buffer["accelerometer"][-1])
+    accel_previous = np.array(sensor_data_buffer["accelerometer"][-2])  # Previous reading for comparison
+    gyro_current = np.array(sensor_data_buffer["gyroscope"][-1])
 
-    # Get model decision score
-    decision_scores = classifier.decision_function(input_features)
-    pothole_detected = decision_scores[0] > threshold
+    # Compute acceleration changes
+    accel_z_change = accel_current[2] - accel_previous[2]  # Change in Z-axis acceleration
+    gyro_variance = np.var(gyro_current)  # Gyroscope variation
 
-    print(f"🧠 Model Decision Score: {decision_scores[0]} | 🚧 Pothole Detected: {pothole_detected}")
+    # Check if pothole detected
+    pothole_detected = (
+        accel_z_change < ACCEL_Z_DROP_THRESHOLD and  # Sudden drop in Z-axis
+        np.abs(accel_current[2]) > ACCEL_Z_RISE_THRESHOLD and  # Immediate rise after drop
+        gyro_variance > GYRO_THRESHOLD  # Sudden gyroscope movement
+    )
 
     if pothole_detected:
         print("🚧 POTHOLE DETECTED! Using Chennai GPS Data.")
@@ -105,42 +101,6 @@ def process_sensor_data():
         socketio.emit("update_map", {"latitude": lat, "longitude": long})
     else:
         print("✅ No pothole detected.")
-
-# Convert Raw Sensor Data to Features
-def preprocess_sensor_data(buffer):
-    """
-    Convert raw sensor data into statistical features.
-    """
-    print("🛠️ Preprocessing sensor data...")
-
-    accel_data = np.array(buffer["accelerometer"])
-    gyro_data = np.array(buffer["gyroscope"])
-    speed_data = np.array(buffer["speed"]) if buffer["speed"] else np.array([0])
-
-    if accel_data.size == 0 or gyro_data.size == 0:
-        return np.zeros((1, 24))  # Ensure proper feature format
-
-    # Compute statistical features
-    features = [
-        np.max(accel_data[:, 0]), np.max(accel_data[:, 1]), np.max(accel_data[:, 2]),  # Max Accel
-        np.max(gyro_data[:, 0]), np.max(gyro_data[:, 1]), np.max(gyro_data[:, 2]),  # Max Gyro
-        np.min(accel_data[:, 0]), np.min(accel_data[:, 1]), np.min(accel_data[:, 2]),  # Min Accel
-        np.min(gyro_data[:, 0]), np.min(gyro_data[:, 1]), np.min(gyro_data[:, 2]),  # Min Gyro
-        np.mean(accel_data[:, 0]), np.mean(accel_data[:, 1]), np.mean(accel_data[:, 2]),  # Mean Accel
-        np.mean(gyro_data[:, 0]), np.mean(gyro_data[:, 1]), np.mean(gyro_data[:, 2]),  # Mean Gyro
-        np.std(accel_data[:, 0]), np.std(accel_data[:, 1]), np.std(accel_data[:, 2]),  # Std Accel
-        np.std(gyro_data[:, 0]), np.std(gyro_data[:, 1]), np.std(gyro_data[:, 2]),  # Std Gyro
-    ]
-
-    features = np.array(features).reshape(1, -1)
-
-    if feature_names:
-        features_df = pd.DataFrame(features, columns=feature_names)
-    else:
-        features_df = pd.DataFrame(features)
-
-    print("📊 Preprocessed features:", features_df.values.tolist())
-    return features_df
 
 # Flask Routes
 @app.route("/")
@@ -155,7 +115,6 @@ if __name__ == "__main__":
     print("🛠️ Starting WebSocket connections for sensors...")
     Sensor(sensor_address, "android.sensor.accelerometer", on_accelerometer_event).connect()
     Sensor(sensor_address, "android.sensor.gyroscope", on_gyroscope_event).connect()
-    Sensor(sensor_address, "android.sensor.speed", on_speed_event).connect()
 
     print("🚀 Starting Flask server...")
     socketio.run(app, host="0.0.0.0", port=5000, debug=True, use_reloader=False)
