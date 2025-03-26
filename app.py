@@ -106,7 +106,7 @@ def process_sensor_data():
 @app.route("/")
 def index():
     print("🖥️ Rendering index.html")
-    return render_template("index.html")
+    return render_template("./index.html")
 
 # Start WebSocket Connections for Sensors
 if __name__ == "__main__":
