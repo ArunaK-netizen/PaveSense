@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Deleted Unwanted Files">
-      <change afterPath="$PROJECT_DIR$/Data_Collector.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/model.py" afterDir="false" />
+    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Dataset Created and approach modified">
+      <change afterPath="$PROJECT_DIR$/GPS_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model.p" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pothole_Detection.ipynb" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +38,7 @@
   "keyToString": {
     "DefaultHtmlFileTemplate": "HTML File",
     "Python.Data_Collector.executor": "Run",
+    "Python.GPS_test.executor": "Run",
     "Python.Non_Pothole_Data_Collector.executor": "Run",
     "Python.Pothole_Data_Collector.executor": "Run",
     "Python.app.executor": "Run",
@@ -125,7 +124,23 @@
       <option name="project" value="LOCAL" />
       <updated>1738940875315</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Dataset Created and approach modified">
+      <option name="closed" value="true" />
+      <created>1739252198808</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1739252198808</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Dataset Created and approach modified">
+      <option name="closed" value="true" />
+      <created>1739252215565</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1739252215565</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -144,6 +159,7 @@
     <MESSAGE value="Integrated Map Functionality" />
     <MESSAGE value="Corrected Sensor Data" />
     <MESSAGE value="Deleted Unwanted Files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Deleted Unwanted Files" />
+    <MESSAGE value="Dataset Created and approach modified" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dataset Created and approach modified" />
   </component>
 </project>

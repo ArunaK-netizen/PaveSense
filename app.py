@@ -110,7 +110,7 @@ def index():
 
 # Start WebSocket Connections for Sensors
 if __name__ == "__main__":
-    sensor_address = "192.168.1.36:8080"
+    sensor_address = "192.168.1.33:8080"
 
     print("🛠️ Starting WebSocket connections for sensors...")
     Sensor(sensor_address, "android.sensor.accelerometer", on_accelerometer_event).connect()
