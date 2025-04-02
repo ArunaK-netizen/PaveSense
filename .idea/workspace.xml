@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Pothole Checking Algorithm Modified">
+    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Website Rendering Issues Fixed">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model.p" beforeDir="false" afterPath="$PROJECT_DIR$/model.p" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +25,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "ArunaK-netizen"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:ArunaK-netizen/Pothole-Detection.git",
+    "accountId": "bb786e3b-635c-4306-a956-a6b938d81944"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
 }</component>
@@ -35,37 +46,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "JavaScript Debug.index.html.executor": "Run",
-    "Python.Data_Collector.executor": "Run",
-    "Python.GPS_test.executor": "Run",
-    "Python.Non_Pothole_Data_Collector.executor": "Run",
-    "Python.Pothole_Data_Collector.executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.model.executor": "Run",
-    "Python.sensor_data.executor": "Run",
-    "Python.test.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "S:/Coding/Projects/PaveSense",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;JavaScript Debug.index.html.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Data_Collector.executor&quot;: &quot;Run&quot;,
+    &quot;Python.GPS_test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Non_Pothole_Data_Collector.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Pothole_Data_Collector.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.model.executor&quot;: &quot;Run&quot;,
+    &quot;Python.sensor_data.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;S:/Coding/Projects/BumpAlert&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="S:\Coding\Projects\PaveSense" />
       <recent name="S:\Coding\Projects\PaveSense\templates" />
+      <recent name="S:\Coding\Projects\PaveSense" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -84,7 +95,9 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1738473795400</updated>
-      <workItem from="1742999260021" duration="782000" />
+      <workItem from="1742999260021" duration="894000" />
+      <workItem from="1743226549688" duration="13000" />
+      <workItem from="1743607834787" duration="967000" />
     </task>
     <task id="LOCAL-00001" summary="Files added">
       <option name="closed" value="true" />
@@ -166,7 +179,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742999586156</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Website Rendering Issues Fixed">
+      <option name="closed" value="true" />
+      <created>1743000152957</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1743000152957</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -190,10 +211,11 @@
     <MESSAGE value="Deleted Unwanted Files" />
     <MESSAGE value="Dataset Created and approach modified" />
     <MESSAGE value="Pothole Checking Algorithm Modified" />
-    <option name="LAST_COMMIT_MESSAGE" value="Pothole Checking Algorithm Modified" />
+    <MESSAGE value="Website Rendering Issues Fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="Website Rendering Issues Fixed" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PaveSense$model.coverage" NAME="model Coverage Results" MODIFIED="1742999668979" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/PaveSense$app.coverage" NAME="app Coverage Results" MODIFIED="1742999997758" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PaveSense$app.coverage" NAME="app Coverage Results" MODIFIED="1743000111647" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

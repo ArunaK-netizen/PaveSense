@@ -1,0 +1,44 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Virtual environment
+venv/
+env/
+
+# Machine learning and model files
+*.h5
+*.pb
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Log and temporary files
+*.log
+*.tmp
+*.csv
+
+# Ignore sensitive data files
+*.json
+*.yaml
+*.yml
+*.sqlite
+*.db
+
+# IDE settings
+.idea/
+.vscode/
+
+# Config files
+.env
+
+
+GPS_test.py
+
+Data_Collector.py
+
