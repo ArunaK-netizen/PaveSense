@@ -37,7 +37,6 @@ Thumbs.db
 # Config files
 .env
 
-
 GPS_test.py
 
 Data_Collector.py
