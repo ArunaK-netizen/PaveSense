@@ -27,6 +27,7 @@
             --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             --pothole-color: #ecc94b;
+            --gps-color: #3498db;
             --radius-sm: 4px;
             --radius-md: 8px;
             --radius-lg: 12px;
@@ -119,6 +120,10 @@
             background-color: var(--pothole-color);
         }
 
+        .legend-blue {
+            background-color: var(--gps-color);
+        }
+
         /* Event Log Styling */
         #event-log-container {
             width: 90%;
@@ -195,15 +200,20 @@
             margin-right: var(--spacing-sm);
         }
 
-
-
-
         .pothole-log {
             color: #8a6d00;
         }
 
         .pothole-log .event-indicator {
             background-color: var(--pothole-color);
+        }
+
+        .gps-log {
+            color: #2c3e50;
+        }
+
+        .gps-log .event-indicator {
+            background-color: var(--gps-color);
         }
 
         /* Customizing Leaflet Controls */
@@ -256,7 +266,7 @@
                 <div class="event-log-title">Event Log</div>
             </div>
             <div id="event-log">
-                <div>Event log will appear here...</div>
+                <div>Loading events...</div>
             </div>
         </div>
     </div>
@@ -280,10 +290,16 @@
         legend.onAdd = function(map) {
             var div = L.DomUtil.create('div', 'legend');
             div.innerHTML =
-                            '<div class="legend-item"><div class="legend-color legend-yellow"></div>Pothole</div>';
+                '<div class="legend-item"><div class="legend-color legend-yellow"></div>Pothole</div>' +
+                '<div class="legend-item"><div class="legend-color legend-blue"></div>GPS Location</div>';
             return div;
         };
         legend.addTo(map);
+
+        // Create a group for all the markers
+        var markersGroup = L.layerGroup().addTo(map);
+        var bounds = L.latLngBounds();
+        var locationCount = 0;
 
         // Fixes map rendering issue
         function fixMapSize() {
@@ -295,6 +311,12 @@
         // Ensure the map is properly sized when the page loads and resizes
         window.onload = fixMapSize;
         window.addEventListener("resize", fixMapSize);
+
+        // Clear the initial event log message
+        document.addEventListener('DOMContentLoaded', function() {
+            const eventLog = document.getElementById('event-log');
+            eventLog.innerHTML = '';
+        });
 
         // Add to event log
         function addToEventLog(message, eventType) {
@@ -321,41 +343,99 @@
             eventLog.insertBefore(logEntry, eventLog.firstChild);
         }
 
-        // WebSocket connection to receive real-time updates
-        var socket = io.connect("http://" + document.domain + ":" + location.port);
+        // Add marker to the map
+        function addMarker(latitude, longitude, type, isHistorical = false) {
+            var markerColor, popupText, markerRadius;
 
-        socket.on("update_map", function(data) {
-            var popupText, markerColor;
-
-            if (data.type === "accident") {
-                // Red icon for accidents
-                markerColor = getComputedStyle(document.documentElement).getPropertyValue('--accident-color').trim();
-                popupText = "<b>ACCIDENT DETECTED!</b>";
-                addToEventLog("ACCIDENT DETECTED at coordinates: " + data.latitude + ", " + data.longitude, "accident");
-            } else {
-                // Yellow icon for potholes
+            if (type === "pothole") {
                 markerColor = getComputedStyle(document.documentElement).getPropertyValue('--pothole-color').trim();
                 popupText = "<b>Pothole Detected</b>";
-                addToEventLog("Pothole detected at coordinates: " + data.latitude + ", " + data.longitude, "pothole");
+                markerRadius = 8;
+                eventType = "pothole";
+            } else if (type === "gps") {
+                markerColor = getComputedStyle(document.documentElement).getPropertyValue('--gps-color').trim();
+                popupText = "<b>GPS Location</b>";
+                markerRadius = 5;
+                eventType = "gps";
+            } else {
+                // Default case
+                markerColor = "#999";
+                popupText = "<b>Unknown Event</b>";
+                markerRadius = 6;
+                eventType = "unknown";
             }
 
-            // Create a circle marker with appropriate color
-            var marker = L.circleMarker([data.latitude, data.longitude], {
-                radius: data.type === "accident" ? 15 : 8,
+            // Add marker to the map
+            var marker = L.circleMarker([latitude, longitude], {
+                radius: markerRadius,
                 fillColor: markerColor,
                 color: "#000",
                 weight: 1,
                 opacity: 1,
                 fillOpacity: 0.8,
-            }).addTo(map);
+            }).addTo(markersGroup);
 
-            marker.bindPopup(popupText).openPopup();
+            marker.bindPopup(popupText);
 
-            // Center map on new event with smooth animation
-            map.flyTo([data.latitude, data.longitude], 15, {
-                duration: 1.5
-            });
+            // Add to event log if it's not a historical entry
+            if (!isHistorical) {
+                addToEventLog(`${type === "pothole" ? "Pothole" : "GPS location"} at coordinates: ${latitude}, ${longitude}`, eventType);
+            }
+
+            // Update bounds to include all markers
+            bounds.extend([latitude, longitude]);
+            locationCount++;
+
+            // If we have multiple markers, fit the map to show all of them
+            if (locationCount > 1) {
+                map.fitBounds(bounds, { padding: [50, 50] });
+            } else if (locationCount === 1) {
+                // For the first marker, center on it
+                map.setView([latitude, longitude], 15);
+            }
+        }
+
+        // WebSocket connection to receive real-time updates
+        var socket = io.connect("http://" + document.domain + ":" + location.port);
+
+        socket.on("connect", function() {
+            addToEventLog("Connected to server, loading historical data...", "gps");
         });
+
+        socket.on("update_map", function(data) {
+            var type = data.type || "pothole";
+            addMarker(data.latitude, data.longitude, type, data.isHistorical);
+
+            // Focus on new events (not historical ones)
+            if (!data.isHistorical) {
+                map.flyTo([data.latitude, data.longitude], 15, {
+                    duration: 1.5
+                });
+            }
+        });
+
+        // Fetch historical locations on page load
+        fetch('/api/locations')
+            .then(response => response.json())
+            .then(locations => {
+                // Clear any initial loading messages
+                document.getElementById('event-log').innerHTML = '';
+
+                if (locations.length === 0) {
+                    addToEventLog("No historical location data available", "gps");
+                } else {
+                    addToEventLog(`Loaded ${locations.length} historical locations`, "gps");
+
+                    // Add all locations to the map
+                    locations.forEach(location => {
+                        addMarker(location.latitude, location.longitude, location.type, true);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading historical data:', error);
+                addToEventLog("Error loading historical location data", "error");
+            });
     </script>
 </body>
 </html>
