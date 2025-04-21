@@ -3,65 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Real-Time Pothole Map</title>
+    <title>Real-Time Road Event Map</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <!-- Leaflet.js for Maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 
-    <!-- Proper CSS for the map -->
+    <!-- Enhanced CSS for the map -->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #2d3748;
+            --text-secondary: #718096;
+            --accent-color: #4299e1;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --pothole-color: #ecc94b;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        h1 {
-            margin-top: 20px;
-            font-size: 24px;
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f7fafc;
+            color: var(--text-color);
+            line-height: 1.5;
+            text-align: center;
+            padding: var(--spacing-md);
         }
 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin: var(--spacing-lg) 0;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: var(--text-color);
+        }
+
+        /* Map Container Styling */
         #map-container {
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
-            height: 550px; /* Ensures container has height */
+            height: 550px;
+            margin-bottom: var(--spacing-lg);
         }
 
         #map {
             height: 500px;
-            width: 80%;
-            max-width: 800px;
-            min-height: 500px; /* Ensures map is not collapsed */
-            border: 2px solid black;
-            border-radius: 10px;
-            margin: 20px auto;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            transition: box-shadow var(--transition-normal);
+            overflow: hidden;
+        }
+
+        /* Legend Styling */
+        .legend {
+            background: white;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: none;
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: var(--spacing-xs) 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            margin-right: var(--spacing-sm);
+            border-radius: 50%;
+            box-shadow: var(--shadow-sm);
+        }
+
+
+
+        .legend-yellow {
+            background-color: var(--pothole-color);
+        }
+
+        /* Event Log Styling */
+        #event-log-container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto var(--spacing-xl);
+        }
+
+        .event-log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md);
+            background-color: var(--bg-color);
+            border-top-left-radius: var(--radius-md);
+            border-top-right-radius: var(--radius-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .event-log-title {
+            font-weight: 500;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        #event-log {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: left;
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-color);
+            box-shadow: var(--shadow-md);
+            font-size: 14px;
+        }
+
+        #event-log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #event-log::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: var(--radius-sm);
+        }
+
+        #event-log::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: var(--radius-sm);
+        }
+
+        #event-log::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+
+        .event-entry {
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .event-entry:last-child {
+            border-bottom: none;
+        }
+
+        .event-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 7px;
+            margin-right: var(--spacing-sm);
+        }
+
+
+
+
+        .pothole-log {
+            color: #8a6d00;
+        }
+
+        .pothole-log .event-indicator {
+            background-color: var(--pothole-color);
+        }
+
+        /* Customizing Leaflet Controls */
+        .leaflet-control-zoom {
+            border: none !important;
+            box-shadow: var(--shadow-md) !important;
+        }
+
+        .leaflet-control-zoom a {
+            border-radius: var(--radius-sm) !important;
+            color: var(--text-color) !important;
+            transition: background-color var(--transition-fast) !important;
+        }
+
+        .leaflet-control-zoom a:hover {
+            background-color: #e2e8f0 !important;
+        }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: var(--radius-md) !important;
+            box-shadow: var(--shadow-md) !important;
+        }
+
+        .leaflet-popup-content {
+            margin: var(--spacing-sm) var(--spacing-md) !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        /* Marker Animations */
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Real-Time Road Event Detection</h1>
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
 
-    <h1>Real-Time Pothole Detection</h1>
-    <div id="map-container">
-        <div id="map"></div>
+        <div id="event-log-container">
+            <div class="event-log-header">
+                <div class="event-log-title">Event Log</div>
+            </div>
+            <div id="event-log">
+                <div>Event log will appear here...</div>
+            </div>
+        </div>
     </div>
 
     <script>
         // Initialize the map
         var map = L.map("map", {
-            center: [20.5937, 78.9629], // Centered in India
-            zoom: 5,
+            center: [13.0827, 80.2707], // Centered in Chennai
+            zoom: 12,
             zoomControl: true
         });
 
         // Add OpenStreetMap tile layer
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: '&copy; OpenStreetMap contributors'
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
         }).addTo(map);
+
+        // Add legend
+        var legend = L.control({position: 'bottomright'});
+        legend.onAdd = function(map) {
+            var div = L.DomUtil.create('div', 'legend');
+            div.innerHTML =
+                            '<div class="legend-item"><div class="legend-color legend-yellow"></div>Pothole</div>';
+            return div;
+        };
+        legend.addTo(map);
 
         // Fixes map rendering issue
         function fixMapSize() {
@@ -74,21 +296,66 @@
         window.onload = fixMapSize;
         window.addEventListener("resize", fixMapSize);
 
-        // WebSocket connection to receive real-time pothole updates
+        // Add to event log
+        function addToEventLog(message, eventType) {
+            const eventLog = document.getElementById('event-log');
+            const timestamp = new Date().toLocaleTimeString();
+
+            // Create wrapper for the entry with indicator
+            const logEntry = document.createElement('div');
+            logEntry.className = `event-entry ${eventType}-log`;
+
+            // Create indicator dot
+            const indicator = document.createElement('div');
+            indicator.className = 'event-indicator';
+
+            // Create message content
+            const content = document.createElement('div');
+            content.textContent = `[${timestamp}] ${message}`;
+
+            // Append elements
+            logEntry.appendChild(indicator);
+            logEntry.appendChild(content);
+
+            // Insert at the top
+            eventLog.insertBefore(logEntry, eventLog.firstChild);
+        }
+
+        // WebSocket connection to receive real-time updates
         var socket = io.connect("http://" + document.domain + ":" + location.port);
 
         socket.on("update_map", function(data) {
-            var marker = L.marker([data.latitude, data.longitude], {
-                icon: L.icon({
-                    iconUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e0/RedDot.svg",
-                    iconSize: [15, 15],
-                    iconAnchor: [7, 7],
-                    popupAnchor: [0, -7]
-                })
+            var popupText, markerColor;
+
+            if (data.type === "accident") {
+                // Red icon for accidents
+                markerColor = getComputedStyle(document.documentElement).getPropertyValue('--accident-color').trim();
+                popupText = "<b>ACCIDENT DETECTED!</b>";
+                addToEventLog("ACCIDENT DETECTED at coordinates: " + data.latitude + ", " + data.longitude, "accident");
+            } else {
+                // Yellow icon for potholes
+                markerColor = getComputedStyle(document.documentElement).getPropertyValue('--pothole-color').trim();
+                popupText = "<b>Pothole Detected</b>";
+                addToEventLog("Pothole detected at coordinates: " + data.latitude + ", " + data.longitude, "pothole");
+            }
+
+            // Create a circle marker with appropriate color
+            var marker = L.circleMarker([data.latitude, data.longitude], {
+                radius: data.type === "accident" ? 15 : 8,
+                fillColor: markerColor,
+                color: "#000",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8,
             }).addTo(map);
-            marker.bindPopup("<b>Pothole Detected!</b>").openPopup();
+
+            marker.bindPopup(popupText).openPopup();
+
+            // Center map on new event with smooth animation
+            map.flyTo([data.latitude, data.longitude], 15, {
+                duration: 1.5
+            });
         });
     </script>
-
 </body>
 </html>
