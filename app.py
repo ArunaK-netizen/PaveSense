@@ -16,7 +16,7 @@ ACCEL_Z_RISE_THRESHOLD = 3.0
 GYRO_THRESHOLD = 1.5
 
 # Database configuration
-DB_FILE = "locations.db"
+DB_FILE = "database/locations.db"
 LOCATION_DISTANCE_THRESHOLD = 0.00005  # Approximately 5 meters in decimal degrees
 
 # Data storage
