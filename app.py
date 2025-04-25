@@ -276,14 +276,15 @@ if __name__ == "__main__":
     # Initialize database
     init_db()
 
-    sensor_address = "192.168.1.33:8080"
-    gps_url = "ws://192.168.1.33:8080/gps"
+    sensor_address = ("172.20.10.6:8080")
+    gps_url = "ws://172.20.10.6:8080/gps"
 
     print("🛠️ Starting WebSocket connections...")
 
     # Start GPS WebSocket in a separate thread
     gps_thread = threading.Thread(target=connect_gps, args=(gps_url,), daemon=True)
     gps_thread.start()
+
 
     # Start sensor WebSockets
     Sensor(sensor_address, "android.sensor.accelerometer", on_accelerometer_event).connect()

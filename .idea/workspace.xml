@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Added gitignore, readme, requirements files">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Cleaned Repo">
+      <change afterPath="$PROJECT_DIR$/acceloremeter_vis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/accuracyAtSpeeds.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/model_accuracy.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +24,17 @@
       </list>
     </option>
   </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform)); sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo, NoAppException&#10;for module in [&quot;main.py&quot;, &quot;wsgi.py&quot;, &quot;app.py&quot;]:&#10;    try: locals().update(ScriptInfo(app_import_path=module, create_app=None).load_app().make_shell_context()); print(&quot;\nFlask App: %s&quot; % app.import_name); break&#10;    except NoAppException: pass">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform)); sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo, NoAppException&#10;for module in [&quot;main.py&quot;, &quot;wsgi.py&quot;, &quot;app.py&quot;]:&#10;    try: locals().update(ScriptInfo(app_import_path=module, create_app=None).load_app().make_shell_context()); print(&quot;\nFlask App: %s&quot; % app.import_name); break&#10;    except NoAppException: pass" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -32,10 +44,13 @@
     &quot;assignee&quot;: &quot;ArunaK-netizen&quot;
   }
 }</component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="c0587446-30a2-43c8-960b-b4c12f990437" />
+  </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;git@github.com:ArunaK-netizen/Pothole-Detection.git&quot;,
-    &quot;accountId&quot;: &quot;bb786e3b-635c-4306-a956-a6b938d81944&quot;
+    &quot;accountId&quot;: &quot;c0587446-30a2-43c8-960b-b4c12f990437&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -54,29 +69,33 @@
     &quot;Python.GPS_test.executor&quot;: &quot;Run&quot;,
     &quot;Python.Non_Pothole_Data_Collector.executor&quot;: &quot;Run&quot;,
     &quot;Python.Pothole_Data_Collector.executor&quot;: &quot;Run&quot;,
+    &quot;Python.acceloremeter_vis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.accuracyAtSpeeds.executor&quot;: &quot;Run&quot;,
     &quot;Python.app.executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;Python.model.executor&quot;: &quot;Run&quot;,
+    &quot;Python.model_accuracy.executor&quot;: &quot;Run&quot;,
     &quot;Python.sensor_data.executor&quot;: &quot;Run&quot;,
     &quot;Python.test.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;S:/Coding/Projects/BumpAlert&quot;,
+    &quot;last_opened_file_path&quot;: &quot;S:/Coding/Projects/PaveSense&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="S:\Coding\Projects\PaveSense\templates" />
       <recent name="S:\Coding\Projects\PaveSense" />
+      <recent name="S:\Coding\Projects\PaveSense\dataset" />
+      <recent name="S:\Coding\Projects\PaveSense\templates" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -102,6 +121,23 @@
       <workItem from="1744878271360" duration="29000" />
       <workItem from="1745040102665" duration="1148000" />
       <workItem from="1745248185266" duration="3290000" />
+      <workItem from="1745252970022" duration="87000" />
+      <workItem from="1745289162330" duration="2052000" />
+      <workItem from="1745293069821" duration="4000" />
+      <workItem from="1745298714750" duration="358000" />
+      <workItem from="1745316163502" duration="1891000" />
+      <workItem from="1745330655210" duration="92000" />
+      <workItem from="1745407169133" duration="1000000" />
+      <workItem from="1745426669247" duration="1418000" />
+      <workItem from="1745431453263" duration="213000" />
+      <workItem from="1745457961868" duration="5000" />
+      <workItem from="1745469465753" duration="635000" />
+      <workItem from="1745472615016" duration="661000" />
+      <workItem from="1745483008911" duration="112000" />
+      <workItem from="1745597354598" duration="1126000" />
+      <workItem from="1745598506239" duration="284000" />
+      <workItem from="1745598803973" duration="144000" />
+      <workItem from="1745599103252" duration="564000" />
     </task>
     <task id="LOCAL-00001" summary="Files added">
       <option name="closed" value="true" />
@@ -207,7 +243,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745251359727</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Integerated dynamic gps location access with GPS sensors">
+      <option name="closed" value="true" />
+      <created>1745253048735</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1745253048735</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -233,11 +277,16 @@
     <MESSAGE value="Pothole Checking Algorithm Modified" />
     <MESSAGE value="Website Rendering Issues Fixed" />
     <MESSAGE value="Added gitignore, readme, requirements files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added gitignore, readme, requirements files" />
+    <MESSAGE value="Integerated dynamic gps location access with GPS sensors" />
+    <MESSAGE value="Cleaned Repo" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cleaned Repo" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/PaveSense$accuracyAtSpeeds.coverage" NAME="accuracyAtSpeeds Coverage Results" MODIFIED="1745408105556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/PaveSense$model.coverage" NAME="model Coverage Results" MODIFIED="1742999668979" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/PaveSense$GPS_test.coverage" NAME="GPS_test Coverage Results" MODIFIED="1745251735733" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/PaveSense$app.coverage" NAME="app Coverage Results" MODIFIED="1745252769218" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PaveSense$acceloremeter_vis.coverage" NAME="acceloremeter_vis Coverage Results" MODIFIED="1745407262034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PaveSense$model_accuracy.coverage" NAME="model_accuracy Coverage Results" MODIFIED="1745290239714" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PaveSense$app.coverage" NAME="app Coverage Results" MODIFIED="1745472637846" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
