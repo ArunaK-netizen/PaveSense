@@ -276,8 +276,8 @@ if __name__ == "__main__":
     # Initialize database
     init_db()
 
-    sensor_address = ("172.20.10.6:8080")
-    gps_url = "ws://172.20.10.6:8080/gps"
+    sensor_address = ("192.168.1.37:8080")
+    gps_url = "ws://192.168.1.37:8080/gps"
 
     print("🛠️ Starting WebSocket connections...")
 

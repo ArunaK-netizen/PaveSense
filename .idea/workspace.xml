@@ -4,7 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Cleaned Repo" />
+    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Cleaned Repo">
+      <change afterPath="$PROJECT_DIR$/data/data_collector.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/data_preprocessor.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/dataset.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inference/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inference/real_time_predictor.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main_ml.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/cnn_lstm_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/model_utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/train_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training/trainer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/acceloremeter_vis.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,6 +71,9 @@
   &quot;associatedIndex&quot;: 3
 }</component>
   <component name="ProjectId" id="2sTJnAH009hEgf8wlW6386HJlCh" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -87,6 +110,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="S:\Coding\Projects\PaveSense\database" />
       <recent name="S:\Coding\Projects\PaveSense" />
       <recent name="S:\Coding\Projects\PaveSense\dataset" />
       <recent name="S:\Coding\Projects\PaveSense\templates" />
@@ -131,7 +155,14 @@
       <workItem from="1745597354598" duration="1126000" />
       <workItem from="1745598506239" duration="284000" />
       <workItem from="1745598803973" duration="144000" />
-      <workItem from="1745599103252" duration="1546000" />
+      <workItem from="1745599103252" duration="1600000" />
+      <workItem from="1747225870429" duration="652000" />
+      <workItem from="1747226959542" duration="15000" />
+      <workItem from="1747330883856" duration="1433000" />
+      <workItem from="1747662547114" duration="18000" />
+      <workItem from="1749919968556" duration="37000" />
+      <workItem from="1749920025175" duration="277000" />
+      <workItem from="1749922249598" duration="912000" />
     </task>
     <task id="LOCAL-00001" summary="Files added">
       <option name="closed" value="true" />
@@ -253,7 +284,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745600658890</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Cleaned Repo">
+      <option name="closed" value="true" />
+      <created>1745600710591</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1745600710591</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -289,6 +328,6 @@
     <SUITE FILE_PATH="coverage/PaveSense$GPS_test.coverage" NAME="GPS_test Coverage Results" MODIFIED="1745251735733" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/PaveSense$acceloremeter_vis.coverage" NAME="acceloremeter_vis Coverage Results" MODIFIED="1745407262034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/PaveSense$model_accuracy.coverage" NAME="model_accuracy Coverage Results" MODIFIED="1745290239714" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/PaveSense$app.coverage" NAME="app Coverage Results" MODIFIED="1745472637846" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PaveSense$app.coverage" NAME="app Coverage Results" MODIFIED="1747331624657" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
