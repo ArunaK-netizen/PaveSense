@@ -6,7 +6,7 @@ from scipy.stats import zscore
 
 
 class SensorDataPreprocessor:
-    def __init__(self, sampling_rate=50):  # 50 Hz typical for mobile sensors
+    def __init__(self, sampling_rate=50):
         self.sampling_rate = sampling_rate
         self.scaler = StandardScaler()
 
@@ -30,36 +30,6 @@ class SensorDataPreprocessor:
             filtered_data[:, i] = signal.filtfilt(b, a, data[:, i])
 
         return filtered_data
-
-    def calculate_magnitude(self, accel_data, gyro_data):
-        """Calculate magnitude of accelerometer and gyroscope"""
-        accel_magnitude = np.sqrt(np.sum(accel_data ** 2, axis=1))
-        gyro_magnitude = np.sqrt(np.sum(gyro_data ** 2, axis=1))
-
-        return accel_magnitude, gyro_magnitude
-
-    def extract_features(self, data, window_size=10):
-        """Extract statistical features from sensor data"""
-        features = []
-
-        for i in range(0, len(data) - window_size + 1, window_size):
-            window = data[i:i + window_size]
-
-            # Statistical features
-            mean_vals = np.mean(window, axis=0)
-            std_vals = np.std(window, axis=0)
-            max_vals = np.max(window, axis=0)
-            min_vals = np.min(window, axis=0)
-            rms_vals = np.sqrt(np.mean(window ** 2, axis=0))
-
-            # Combine all features
-            window_features = np.concatenate([
-                mean_vals, std_vals, max_vals, min_vals, rms_vals
-            ])
-
-            features.append(window_features)
-
-        return np.array(features)
 
     def normalize_data(self, data, fit_scaler=True):
         """Normalize data using StandardScaler"""
@@ -86,15 +56,3 @@ class SensorDataPreprocessor:
             combined_data = self.normalize_data(combined_data)
 
         return combined_data
-
-    def create_labels_from_events(self, data_length, pothole_events,
-                                  event_window=25):  # 0.5 seconds at 50Hz
-        """Create labels from pothole events"""
-        labels = np.zeros(data_length)
-
-        for event_idx in pothole_events:
-            start_idx = max(0, event_idx - event_window // 2)
-            end_idx = min(data_length, event_idx + event_window // 2)
-            labels[start_idx:end_idx] = 1
-
-        return labels

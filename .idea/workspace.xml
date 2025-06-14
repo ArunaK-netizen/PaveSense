@@ -4,15 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Cleaned Repo">
-      <change afterPath="$PROJECT_DIR$/data/process_dataset.py" afterDir="false" />
+    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="ML model added">
+      <change afterPath="$PROJECT_DIR$/process_dataset.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/data_collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/data_collector.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/data_preprocessor.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/data_preprocessor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/process_dataset.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/inference/real_time_predictor.py" beforeDir="false" afterPath="$PROJECT_DIR$/inference/real_time_predictor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main_ml.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_ml.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/cnn_lstm_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/cnn_lstm_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/model_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/model_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/train_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/trainer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/constants.py" afterDir="false" />
     </list>
@@ -153,7 +157,8 @@
       <workItem from="1747662547114" duration="18000" />
       <workItem from="1749919968556" duration="37000" />
       <workItem from="1749920025175" duration="277000" />
-      <workItem from="1749922249598" duration="2541000" />
+      <workItem from="1749922249598" duration="3691000" />
+      <workItem from="1749926287397" duration="593000" />
     </task>
     <task id="LOCAL-00001" summary="Files added">
       <option name="closed" value="true" />
@@ -283,7 +288,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745600710591</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="ML model added">
+      <option name="closed" value="true" />
+      <created>1749924853365</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1749924853365</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -311,7 +324,8 @@
     <MESSAGE value="Added gitignore, readme, requirements files" />
     <MESSAGE value="Integerated dynamic gps location access with GPS sensors" />
     <MESSAGE value="Cleaned Repo" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cleaned Repo" />
+    <MESSAGE value="ML model added" />
+    <option name="LAST_COMMIT_MESSAGE" value="ML model added" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PaveSense$accuracyAtSpeeds.coverage" NAME="accuracyAtSpeeds Coverage Results" MODIFIED="1745408105556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

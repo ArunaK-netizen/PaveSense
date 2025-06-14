@@ -14,7 +14,7 @@ from models.cnn_lstm_model import CNNLSTMPotholeDetector
 
 
 class RealDataTrainer:
-    def __init__(self, device='cpu'):
+    def __init__(self, device='cuda' if torch.cuda.is_available() else 'cpu'):
         self.device = device
         self.model = None
         self.optimizer = None

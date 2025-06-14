@@ -14,7 +14,6 @@ class PotholeDataCollector:
     def __init__(self, phone_ip="192.168.1.37:8080"):
         self.phone_ip = phone_ip
         self.collecting = False
-        self.data_buffer = []
         self.current_session = {
             "timestamp": [],
             "accel_x": [],
@@ -38,7 +37,7 @@ class PotholeDataCollector:
         self.pothole_window = 3.0  # seconds before and after pothole mark
         self.pothole_events = []  # timestamps of pothole events
 
-        # Data collection stats
+        # Stats
         self.total_samples = 0
         self.pothole_samples = 0
         self.session_start = None
@@ -72,10 +71,6 @@ class PotholeDataCollector:
             self.pothole_events.append(pothole_time)
             print(f"\n🚨 POTHOLE MARKED at {datetime.now().strftime('%H:%M:%S')}")
             print(f"   Total potholes marked: {len(self.pothole_events)}")
-            print(
-                f"   Current accel: [{self.current_accel[0]:.2f}, {self.current_accel[1]:.2f}, {self.current_accel[2]:.2f}]")
-            print(
-                f"   Current gyro:  [{self.current_gyro[0]:.2f}, {self.current_gyro[1]:.2f}, {self.current_gyro[2]:.2f}]")
 
     def toggle_collection(self, e):
         """Toggle data collection on/off"""
@@ -92,13 +87,13 @@ class PotholeDataCollector:
         exit()
 
     def connect_sensors(self):
-        """Connect to phone sensors"""
+        """Connect to phone sensors using your existing WebSocket method"""
         try:
-            # Start GPS WebSocket
+            # GPS WebSocket
             gps_thread = threading.Thread(target=self.connect_gps, daemon=True)
             gps_thread.start()
 
-            # Start sensor WebSockets
+            # Sensor WebSockets
             accel_thread = threading.Thread(target=self.connect_accelerometer, daemon=True)
             accel_thread.start()
 
@@ -106,7 +101,7 @@ class PotholeDataCollector:
             gyro_thread.start()
 
             print("🔗 Connecting to phone sensors...")
-            time.sleep(2)  # Give connections time to establish
+            time.sleep(2)
 
         except Exception as e:
             print(f"❌ Error connecting to sensors: {e}")
@@ -122,7 +117,7 @@ class PotholeDataCollector:
                     "lng": data.get("longitude", 0.0),
                     "speed": data.get("speed", 0.0)
                 }
-            except Exception as e:
+            except:
                 pass
 
         def on_open(ws):
@@ -140,7 +135,7 @@ class PotholeDataCollector:
             try:
                 data = json.loads(message)
                 self.current_accel = data["values"]
-            except Exception as e:
+            except:
                 pass
 
         def on_open(ws):
@@ -157,7 +152,7 @@ class PotholeDataCollector:
             try:
                 data = json.loads(message)
                 self.current_gyro = data["values"]
-            except Exception as e:
+            except:
                 pass
 
         def on_open(ws):
@@ -175,9 +170,9 @@ class PotholeDataCollector:
 
         while True:
             if self.collecting:
-                # Record current sensor data
                 current_time = time.time()
 
+                # Record sensor data
                 self.current_session["timestamp"].append(current_time)
                 self.current_session["accel_x"].append(self.current_accel[0])
                 self.current_session["accel_y"].append(self.current_accel[1])
@@ -189,7 +184,7 @@ class PotholeDataCollector:
                 self.current_session["longitude"].append(self.current_gps["lng"])
                 self.current_session["speed"].append(self.current_gps["speed"])
 
-                # Determine label (0 = normal, 1 = pothole)
+                # Determine label
                 label = self.get_current_label(current_time)
                 self.current_session["label"].append(label)
 
@@ -197,10 +192,10 @@ class PotholeDataCollector:
                 if label == 1:
                     self.pothole_samples += 1
 
-                # Display current status
+                # Display status
                 self.display_status()
 
-            time.sleep(0.02)  # 50 Hz sampling rate
+            time.sleep(0.02)  # 50 Hz sampling
 
     def get_current_label(self, current_time):
         """Determine if current time should be labeled as pothole"""
@@ -229,17 +224,14 @@ class PotholeDataCollector:
             print("❌ No data collected!")
             return
 
-        # Create dataset directory
         os.makedirs("datasets", exist_ok=True)
 
         # Create DataFrame
         df = pd.DataFrame(self.current_session)
 
-        # Add session metadata
+        # Save to CSV
         session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"datasets/pothole_data_{session_id}.csv"
-
-        # Save to CSV
         df.to_csv(filename, index=False)
 
         # Print statistics
@@ -248,38 +240,16 @@ class PotholeDataCollector:
         print(f"🚨 Pothole samples: {self.pothole_samples} ({self.pothole_samples / len(df) * 100:.1f}%)")
         print(
             f"✅ Normal samples: {len(df) - self.pothole_samples} ({(len(df) - self.pothole_samples) / len(df) * 100:.1f}%)")
-        print(f"⏱️  Duration: {(df['timestamp'].max() - df['timestamp'].min()) / 60:.1f} minutes")
-        print(f"📍 GPS points: {df[df['latitude'] != 0].shape[0]}")
-
-        # Save summary
-        summary = {
-            "session_id": session_id,
-            "total_samples": len(df),
-            "pothole_samples": self.pothole_samples,
-            "normal_samples": len(df) - self.pothole_samples,
-            "duration_minutes": (df['timestamp'].max() - df['timestamp'].min()) / 60,
-            "pothole_events": len(self.pothole_events),
-            "sampling_rate": "50 Hz",
-            "pothole_window_seconds": self.pothole_window
-        }
-
-        summary_filename = f"datasets/summary_{session_id}.json"
-        with open(summary_filename, 'w') as f:
-            json.dump(summary, f, indent=2)
-
-        print(f"📋 Summary saved: {summary_filename}")
 
 
 def main():
     print("🚗 Pothole Dataset Collection System")
     print("=" * 50)
 
-    # Get phone IP
     phone_ip = input("Enter your phone's IP address (e.g., 192.168.1.37:8080): ").strip()
     if not phone_ip:
         phone_ip = "192.168.1.37:8080"
 
-    # Create collector
     collector = PotholeDataCollector(phone_ip)
 
     print("\n📋 INSTRUCTIONS:")
@@ -288,7 +258,6 @@ def main():
     print("3. Drive around normally")
     print("4. Press SPACEBAR immediately when you hit a pothole")
     print("5. Press 'Q' when done to save data")
-    print("\n🚨 IMPORTANT: Be safe! Have a passenger mark potholes or pull over!")
 
     input("\nPress ENTER when ready to start...")
 

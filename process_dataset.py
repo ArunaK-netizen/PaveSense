@@ -6,6 +6,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
+import json
 
 
 class DatasetProcessor:
@@ -187,7 +189,6 @@ class DatasetProcessor:
         np.save("datasets/processed/y_test.npy", y_test)
 
         # Save scaler
-        import joblib
         joblib.dump(self.scaler, "datasets/processed/scaler.pkl")
 
         # Save metadata
@@ -202,7 +203,6 @@ class DatasetProcessor:
             "test_pothole_ratio": float(np.mean(y_test))
         }
 
-        import json
         with open("datasets/processed/metadata.json", "w") as f:
             json.dump(metadata, f, indent=2)
 

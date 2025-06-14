@@ -15,9 +15,6 @@ from utils.constants import *
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-# Database configuration
-DB_FILE = "database/locations.db"
-
 # Data storage
 sensor_data_buffer = {"accelerometer": [], "gyroscope": []}
 pothole_locations = []
@@ -53,7 +50,6 @@ def ml_pothole_detection_callback(result):
     print(f"   Confidence: {result['confidence']:.3f} ({result['confidence'] * 100:.1f}%)")
     print(f"   Location: ({lat:.6f}, {long:.6f})")
     print(f"   Total detections: {detection_stats['ml_detections']}")
-    print(f"   Session time: {(datetime.now() - detection_stats['session_start']).total_seconds():.1f}s")
 
     # Store in database
     if add_location(lat, long, "pothole"):
@@ -75,7 +71,7 @@ if ml_detector:
     ml_detector.set_detection_callback(ml_pothole_detection_callback)
 
 
-# Database functions
+# Database functions (your existing ones)
 def init_db():
     os.makedirs("database", exist_ok=True)
     conn = sqlite3.connect(DB_FILE)
@@ -155,7 +151,7 @@ def get_all_locations():
     return locations
 
 
-# Sensor event handlers
+# Sensor event handlers (your existing ones)
 def on_accelerometer_event(values, timestamp):
     sensor_data_buffer["accelerometer"].append(values)
     if len(sensor_data_buffer["accelerometer"]) > 100:
@@ -170,7 +166,7 @@ def on_gyroscope_event(values, timestamp):
     process_sensor_data()
 
 
-# GPS handlers
+# GPS handlers (your existing ones)
 def on_gps_message(ws, message):
     global lat, long
     try:
@@ -204,7 +200,7 @@ def connect_gps(url):
     ws.run_forever()
 
 
-# Sensor class
+# Sensor class (your existing one)
 class Sensor:
     def __init__(self, address, sensor_type, on_sensor_event):
         self.address = address
@@ -267,7 +263,7 @@ def process_sensor_data():
         accel_magnitude = np.linalg.norm(accel_current)
         gyro_magnitude = np.linalg.norm(gyro_current)
 
-        if accel_magnitude > 15.0 or gyro_magnitude > 2.5:
+        if accel_magnitude > ACCEL_MAGNITUDE_THRESHOLD or gyro_magnitude > 2.5:
             confidence = min(0.9, (accel_magnitude + gyro_magnitude) / 20.0)
             result = {
                 'pothole_detected': True,
@@ -295,7 +291,7 @@ def process_sensor_data():
           f"Det:{detection_stats['ml_detections']}/{detection_stats['total_readings']}", end='')
 
 
-# Flask routes
+# Flask routes (your existing ones)
 @app.route("/")
 def index():
     return "<h1>🚗 ML Pothole Detection System</h1><p>Connect your phone sensors to start detection!</p>"
@@ -325,7 +321,7 @@ def get_stats():
     })
 
 
-# SocketIO handlers
+# SocketIO handlers (your existing ones)
 @socketio.on('connect')
 def handle_connect():
     """Send all stored locations to newly connected clients"""
@@ -344,8 +340,8 @@ if __name__ == "__main__":
     # Initialize database
     init_db()
 
-    # Configure your phone's IP address here
-    sensor_address = "192.168.1.37:8080"  # CHANGE THIS TO YOUR PHONE'S IP
+    # CHANGE THIS TO YOUR PHONE'S IP ADDRESS
+    sensor_address = "192.168.1.37:8080"
     gps_url = f"ws://{sensor_address}/gps"
 
     print("🚗 ML Pothole Detection System Starting...")
@@ -354,7 +350,7 @@ if __name__ == "__main__":
     print(f"📱 Phone Address: {sensor_address}")
     print("=" * 60)
 
-    # Start GPS WebSocket in a separate thread
+    # Start GPS WebSocket
     gps_thread = threading.Thread(target=connect_gps, args=(gps_url,), daemon=True)
     gps_thread.start()
 

@@ -3,35 +3,11 @@ import torch.nn as nn
 import numpy as np
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 def count_parameters(model):
     """Count trainable parameters in model"""
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-
-def initialize_weights(model):
-    """Initialize model weights"""
-    for module in model.modules():
-        if isinstance(module, nn.Conv1d):
-            nn.init.kaiming_normal_(module.weight, mode='fan_out', nonlinearity='relu')
-            if module.bias is not None:
-                nn.init.constant_(module.bias, 0)
-        elif isinstance(module, nn.BatchNorm1d):
-            nn.init.constant_(module.weight, 1)
-            nn.init.constant_(module.bias, 0)
-        elif isinstance(module, nn.Linear):
-            nn.init.normal_(module.weight, 0, 0.01)
-            nn.init.constant_(module.bias, 0)
-        elif isinstance(module, nn.LSTM):
-            for name, param in module.named_parameters():
-                if 'weight_ih' in name:
-                    nn.init.xavier_uniform_(param.data)
-                elif 'weight_hh' in name:
-                    nn.init.orthogonal_(param.data)
-                elif 'bias' in name:
-                    param.data.fill_(0)
 
 
 def calculate_metrics(y_true, y_pred, y_prob=None):
@@ -49,18 +25,6 @@ def calculate_metrics(y_true, y_pred, y_prob=None):
         metrics['ap'] = average_precision_score(y_true, y_prob)
 
     return metrics
-
-
-def plot_confusion_matrix(y_true, y_pred, classes=['No Pothole', 'Pothole']):
-    """Plot confusion matrix"""
-    cm = confusion_matrix(y_true, y_pred)
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=classes, yticklabels=classes)
-    plt.title('Confusion Matrix')
-    plt.ylabel('True Label')
-    plt.xlabel('Predicted Label')
-    plt.show()
 
 
 def plot_training_history(train_losses, val_losses, train_accuracies, val_accuracies):
