@@ -1,208 +1,366 @@
-import os
-import sys
-import time
+import websocket
+import json
 import numpy as np
-from collections import deque
 import threading
-import logging
+import sqlite3
+from flask import Flask, render_template, jsonify
+from flask_socketio import SocketIO, emit
+from datetime import datetime
+import os
 
-# ML Model imports
-import torch
+# Import ML components
 from inference.real_time_predictor import IntegratedPotholeDetector
+from utils.constants import *
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+app = Flask(__name__)
+socketio = SocketIO(app)
 
+# Database configuration
+DB_FILE = "database/locations.db"
 
-class SimplePotholeDetector:
-    def __init__(self, model_path='models/trained_pothole_model.pth', sequence_length=50):
-        """
-        Simple pothole detector that just classifies sensor data
-        """
-        self.sequence_length = sequence_length
-        self.sensor_buffer = {
-            "accelerometer": deque(maxlen=sequence_length),
-            "gyroscope": deque(maxlen=sequence_length)
-        }
+# Data storage
+sensor_data_buffer = {"accelerometer": [], "gyroscope": []}
+pothole_locations = []
 
-        # Load ML model
-        self.ml_detector = self._load_model(model_path)
+# Initialize ML detector
+try:
+    model_path = 'models/trained_pothole_model.pth'
+    ml_detector = IntegratedPotholeDetector(model_path, sequence_length=SEQUENCE_LENGTH)
+    print("🤖 ML Pothole Detection System Initialized!")
+except Exception as e:
+    print(f"❌ ML initialization error: {e}")
+    ml_detector = None
 
-        # Statistics
-        self.total_readings = 0
-        self.pothole_detections = 0
+# Global variables for GPS
+lat, long = 0.0, 0.0
 
-        logger.info("Simple Pothole Detector initialized")
-
-    def _load_model(self, model_path):
-        """Load the trained ML model"""
-        try:
-            if os.path.exists(model_path):
-                ml_detector = IntegratedPotholeDetector(model_path, self.sequence_length)
-                logger.info("✅ ML model loaded successfully")
-                return ml_detector
-            else:
-                logger.warning("❌ Model file not found. Using dummy classifier.")
-                return self._create_dummy_classifier()
-        except Exception as e:
-            logger.error(f"❌ Model loading error: {e}")
-            return self._create_dummy_classifier()
-
-    def _create_dummy_classifier(self):
-        """Create a simple rule-based classifier as fallback"""
-
-        class DummyClassifier:
-            def process_sensor_data(self, accel_data, gyro_data):
-                # Simple threshold-based detection
-                accel_magnitude = np.sqrt(np.sum(np.array(accel_data) ** 2))
-                gyro_magnitude = np.sqrt(np.sum(np.array(gyro_data) ** 2))
-
-                # Basic thresholds (adjust based on your data)
-                if accel_magnitude > 15.0 or gyro_magnitude > 2.0:
-                    confidence = min(0.9, (accel_magnitude + gyro_magnitude) / 20.0)
-                    return {
-                        'pothole_detected': True,
-                        'confidence': confidence,
-                        'message': 'Pothole detected (rule-based)'
-                    }
-
-                return {
-                    'pothole_detected': False,
-                    'confidence': 0.1,
-                    'message': 'Road OK'
-                }
-
-        return DummyClassifier()
-
-    def add_sensor_data(self, accelerometer_data, gyroscope_data):
-        """
-        Add new sensor data point
-
-        Args:
-            accelerometer_data: [x, y, z] accelerometer values
-            gyroscope_data: [x, y, z] gyroscope values
-        """
-        self.sensor_buffer["accelerometer"].append(accelerometer_data)
-        self.sensor_buffer["gyroscope"].append(gyroscope_data)
-
-        # Classify if we have enough data
-        if len(self.sensor_buffer["accelerometer"]) >= self.sequence_length:
-            self._classify_current_data()
-
-    def _classify_current_data(self):
-        """Classify current sensor data"""
-        try:
-            # Get latest sensor readings
-            accel_current = np.array(self.sensor_buffer["accelerometer"][-1])
-            gyro_current = np.array(self.sensor_buffer["gyroscope"][-1])
-
-            # Classify using ML model
-            result = self.ml_detector.process_sensor_data(accel_current, gyro_current)
-
-            # Update statistics
-            self.total_readings += 1
-            if result['pothole_detected']:
-                self.pothole_detections += 1
-
-            # Print results
-            self._print_results(accel_current, gyro_current, result)
-
-        except Exception as e:
-            logger.error(f"Classification error: {e}")
-
-    def _print_results(self, accel_data, gyro_data, result):
-        """Print classification results"""
-        # Clear previous line and print new data
-        print(f"\r{' ' * 100}", end='\r')  # Clear line
-
-        accel_mag = np.sqrt(np.sum(accel_data ** 2))
-        gyro_mag = np.sqrt(np.sum(gyro_data ** 2))
-
-        status_icon = "🚨" if result['pothole_detected'] else "✅"
-        confidence_bar = "█" * int(result['confidence'] * 20)
-
-        print(f"{status_icon} Accel: [{accel_data[0]:6.2f}, {accel_data[1]:6.2f}, {accel_data[2]:6.2f}] "
-              f"({accel_mag:6.2f}) | Gyro: [{gyro_data[0]:6.2f}, {gyro_data[1]:6.2f}, {gyro_data[2]:6.2f}] "
-              f"({gyro_mag:6.2f}) | Confidence: {result['confidence']:.3f} {confidence_bar:<20} | "
-              f"Detections: {self.pothole_detections}/{self.total_readings}", end='')
-
-        # Print alert on new line for potholes
-        if result['pothole_detected']:
-            print(f"\n🚨 POTHOLE DETECTED! Confidence: {result['confidence']:.3f}")
-
-    def get_statistics(self):
-        """Get detection statistics"""
-        detection_rate = (self.pothole_detections / max(self.total_readings, 1)) * 100
-        return {
-            'total_readings': self.total_readings,
-            'pothole_detections': self.pothole_detections,
-            'detection_rate': detection_rate
-        }
+# Statistics
+detection_stats = {
+    "total_readings": 0,
+    "ml_detections": 0,
+    "session_start": datetime.now()
+}
 
 
-def simulate_sensor_data():
-    """
-    Simulate sensor data for testing
-    In real implementation, replace this with actual sensor data collection
-    """
-    while True:
-        # Generate random sensor data (replace with real sensor readings)
-        accel_data = [
-            np.random.normal(0, 2),  # x
-            np.random.normal(0, 2),  # y
-            np.random.normal(9.8, 1)  # z (gravity)
-        ]
+def ml_pothole_detection_callback(result):
+    """Callback for ML pothole detections"""
+    global lat, long, detection_stats
 
-        gyro_data = [
-            np.random.normal(0, 0.5),  # x
-            np.random.normal(0, 0.5),  # y
-            np.random.normal(0, 0.5)  # z
-        ]
+    detection_stats["ml_detections"] += 1
 
-        # Occasionally add "pothole" data (high acceleration/gyroscope values)
-        if np.random.random() < 0.05:  # 5% chance of pothole
-            accel_data[0] += np.random.uniform(10, 20)  # Sharp acceleration
-            accel_data[1] += np.random.uniform(5, 15)
-            gyro_data[0] += np.random.uniform(2, 5)  # Sharp rotation
+    print(f"\n🚨 POTHOLE DETECTED!")
+    print(f"   Method: {result['message']}")
+    print(f"   Confidence: {result['confidence']:.3f} ({result['confidence'] * 100:.1f}%)")
+    print(f"   Location: ({lat:.6f}, {long:.6f})")
+    print(f"   Total detections: {detection_stats['ml_detections']}")
+    print(f"   Session time: {(datetime.now() - detection_stats['session_start']).total_seconds():.1f}s")
 
-        yield accel_data, gyro_data
+    # Store in database
+    if add_location(lat, long, "pothole"):
+        pothole_locations.append((lat, long))
+
+        # Emit to frontend
+        socketio.emit("update_map", {
+            "latitude": lat,
+            "longitude": long,
+            "type": "pothole",
+            "confidence": result['confidence'],
+            "detection_method": "ML" if "ML:" in result['message'] else "Rule",
+            "timestamp": datetime.now().strftime("%H:%M:%S")
+        })
 
 
-def main():
-    """Main function to run the pothole detector"""
-    print("🚗 Simple Pothole Detection System")
-    print("=" * 60)
+# Set the ML callback
+if ml_detector:
+    ml_detector.set_detection_callback(ml_pothole_detection_callback)
 
-    # Initialize detector
-    detector = SimplePotholeDetector()
 
-    print("📊 Starting sensor data classification...")
-    print("📱 In real implementation, connect your mobile sensor data here")
-    print("🔄 Press Ctrl+C to stop\n")
+# Database functions
+def init_db():
+    os.makedirs("database", exist_ok=True)
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("""
+                   CREATE TABLE IF NOT EXISTS locations
+                   (
+                       id
+                       INTEGER
+                       PRIMARY
+                       KEY
+                       AUTOINCREMENT,
+                       latitude
+                       REAL
+                       NOT
+                       NULL,
+                       longitude
+                       REAL
+                       NOT
+                       NULL,
+                       type
+                       TEXT
+                       NOT
+                       NULL,
+                       timestamp
+                       DATETIME
+                       DEFAULT
+                       CURRENT_TIMESTAMP
+                   )
+                   """)
+    conn.commit()
+    conn.close()
+    print("✅ Database initialized")
 
+
+def add_location(latitude, longitude, location_type="pothole"):
+    """Store location in database"""
+    if not is_duplicate_location(latitude, longitude):
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cursor.execute(
+            "INSERT INTO locations (latitude, longitude, type, timestamp) VALUES (?, ?, ?, ?)",
+            (latitude, longitude, location_type, timestamp)
+        )
+        conn.commit()
+        conn.close()
+        print(f"✅ New {location_type} location added: ({latitude:.6f}, {longitude:.6f})")
+        return True
+    else:
+        print(f"⚠️ Duplicate {location_type} location ignored")
+        return False
+
+
+def is_duplicate_location(latitude, longitude):
+    """Check if location is too close to existing ones"""
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("""
+                   SELECT 1
+                   FROM locations
+                   WHERE ABS(latitude - ?) < ?
+                     AND ABS(longitude - ?) < ? LIMIT 1
+                   """, (latitude, LOCATION_DISTANCE_THRESHOLD, longitude, LOCATION_DISTANCE_THRESHOLD))
+    result = cursor.fetchone()
+    conn.close()
+    return result is not None
+
+
+def get_all_locations():
+    """Retrieve all stored locations"""
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("SELECT latitude, longitude, type FROM locations")
+    locations = cursor.fetchall()
+    conn.close()
+    return locations
+
+
+# Sensor event handlers
+def on_accelerometer_event(values, timestamp):
+    sensor_data_buffer["accelerometer"].append(values)
+    if len(sensor_data_buffer["accelerometer"]) > 100:
+        sensor_data_buffer["accelerometer"].pop(0)
+    process_sensor_data()
+
+
+def on_gyroscope_event(values, timestamp):
+    sensor_data_buffer["gyroscope"].append(values)
+    if len(sensor_data_buffer["gyroscope"]) > 100:
+        sensor_data_buffer["gyroscope"].pop(0)
+    process_sensor_data()
+
+
+# GPS handlers
+def on_gps_message(ws, message):
+    global lat, long
     try:
-        # Simulate continuous sensor data (replace with real sensor input)
-        sensor_generator = simulate_sensor_data()
+        data = json.loads(message)
+        lat, long = data["latitude"], data["longitude"]
+        print(f"📍 GPS: ({lat:.6f}, {long:.6f})")
+    except Exception as e:
+        print(f"❌ Error processing GPS message: {e}")
 
-        for accel_data, gyro_data in sensor_generator:
-            # Add sensor data and classify
-            detector.add_sensor_data(accel_data, gyro_data)
 
-            # Small delay to simulate real sensor sampling rate
-            time.sleep(0.1)  # 10 Hz sampling rate
+def on_gps_error(ws, error):
+    print(f"❌ GPS WebSocket error: {error}")
 
-    except KeyboardInterrupt:
-        print("\n\n🛑 Stopping detection system...")
 
-        # Print final statistics
-        stats = detector.get_statistics()
-        print(f"\n📊 Final Statistics:")
-        print(f"   Total readings: {stats['total_readings']}")
-        print(f"   Pothole detections: {stats['pothole_detections']}")
-        print(f"   Detection rate: {stats['detection_rate']:.2f}%")
-        print("\n✅ System stopped.")
+def on_gps_close(ws, close_code, reason):
+    print(f"🔒 GPS WebSocket closed: {reason}")
+
+
+def on_gps_open(ws):
+    print("🔗 Connected to GPS WebSocket")
+    ws.send("getLastKnowLocation")
+
+
+def connect_gps(url):
+    """Establish GPS WebSocket connection"""
+    ws = websocket.WebSocketApp(url,
+                                on_open=on_gps_open,
+                                on_message=on_gps_message,
+                                on_error=on_gps_error,
+                                on_close=on_gps_close)
+    ws.run_forever()
+
+
+# Sensor class
+class Sensor:
+    def __init__(self, address, sensor_type, on_sensor_event):
+        self.address = address
+        self.sensor_type = sensor_type
+        self.on_sensor_event = on_sensor_event
+
+    def on_message(self, ws, message):
+        try:
+            data = json.loads(message)
+            values = data["values"]
+            timestamp = data["timestamp"]
+            self.on_sensor_event(values=values, timestamp=timestamp)
+        except Exception as e:
+            print(f"❌ Error processing {self.sensor_type} message: {e}")
+
+    def on_error(self, ws, error):
+        print(f"❌ Error in {self.sensor_type} WebSocket: {error}")
+
+    def on_close(self, ws, close_code, reason):
+        print(f"🔒 Connection closed for {self.sensor_type}: {reason}")
+
+    def on_open(self, ws):
+        print(f"🔗 Connected to {self.sensor_type} WebSocket!")
+
+    def make_websocket_connection(self):
+        ws_url = f"ws://{self.address}/sensor/connect?type={self.sensor_type}"
+        ws = websocket.WebSocketApp(
+            ws_url,
+            on_open=self.on_open,
+            on_message=self.on_message,
+            on_error=self.on_error,
+            on_close=self.on_close,
+        )
+        ws.run_forever()
+
+    def connect(self):
+        thread = threading.Thread(target=self.make_websocket_connection, daemon=True)
+        thread.start()
+
+
+# ML-enhanced sensor data processing
+def process_sensor_data():
+    """ML-enhanced sensor data processing"""
+    global detection_stats
+
+    if len(sensor_data_buffer["accelerometer"]) < 1 or len(sensor_data_buffer["gyroscope"]) < 1:
+        return
+
+    # Get current sensor data
+    accel_current = np.array(sensor_data_buffer["accelerometer"][-1])
+    gyro_current = np.array(sensor_data_buffer["gyroscope"][-1])
+
+    detection_stats["total_readings"] += 1
+
+    # Process with ML model
+    if ml_detector:
+        result = ml_detector.process_sensor_data(accel_current, gyro_current)
+    else:
+        # Fallback rule-based detection
+        accel_magnitude = np.linalg.norm(accel_current)
+        gyro_magnitude = np.linalg.norm(gyro_current)
+
+        if accel_magnitude > 15.0 or gyro_magnitude > 2.5:
+            confidence = min(0.9, (accel_magnitude + gyro_magnitude) / 20.0)
+            result = {
+                'pothole_detected': True,
+                'confidence': confidence,
+                'message': f'Rule: Pothole detected! (accel: {accel_magnitude:.2f})'
+            }
+            if ml_pothole_detection_callback:
+                ml_pothole_detection_callback(result)
+        else:
+            result = {
+                'pothole_detected': False,
+                'confidence': 0.1,
+                'message': f'Rule: Road OK (accel: {accel_magnitude:.2f})'
+            }
+
+    # Display current readings
+    accel_mag = np.linalg.norm(accel_current)
+    gyro_mag = np.linalg.norm(gyro_current)
+
+    status_icon = "🚨" if result['pothole_detected'] else "✅"
+    confidence_bar = "█" * int(result['confidence'] * 20)
+
+    print(f"\r{status_icon} A:{accel_mag:6.2f} G:{gyro_mag:6.2f} "
+          f"Conf:{result['confidence']:.3f} {confidence_bar:<20} "
+          f"Det:{detection_stats['ml_detections']}/{detection_stats['total_readings']}", end='')
+
+
+# Flask routes
+@app.route("/")
+def index():
+    return "<h1>🚗 ML Pothole Detection System</h1><p>Connect your phone sensors to start detection!</p>"
+
+
+@app.route("/api/locations")
+def get_locations():
+    """API endpoint to get all locations"""
+    locations = get_all_locations()
+    location_data = [
+        {"latitude": lat, "longitude": lng, "type": loc_type}
+        for lat, lng, loc_type in locations
+    ]
+    return jsonify(location_data)
+
+
+@app.route("/api/stats")
+def get_stats():
+    """API endpoint for detection statistics"""
+    session_duration = (datetime.now() - detection_stats["session_start"]).total_seconds()
+    return jsonify({
+        "total_readings": detection_stats["total_readings"],
+        "ml_detections": detection_stats["ml_detections"],
+        "session_duration_minutes": round(session_duration / 60, 1),
+        "detection_rate": round(detection_stats["ml_detections"] / max(session_duration / 60, 1), 2),
+        "model_loaded": ml_detector is not None and hasattr(ml_detector, 'model') and ml_detector.model is not None
+    })
+
+
+# SocketIO handlers
+@socketio.on('connect')
+def handle_connect():
+    """Send all stored locations to newly connected clients"""
+    locations = get_all_locations()
+    for lat, lng, loc_type in locations:
+        socketio.emit("update_map", {
+            "latitude": lat,
+            "longitude": lng,
+            "type": loc_type,
+            "isHistorical": True
+        })
+    print(f"📊 Sent {len(locations)} historical locations to client")
 
 
 if __name__ == "__main__":
-    main()
+    # Initialize database
+    init_db()
+
+    # Configure your phone's IP address here
+    sensor_address = "192.168.1.37:8080"  # CHANGE THIS TO YOUR PHONE'S IP
+    gps_url = f"ws://{sensor_address}/gps"
+
+    print("🚗 ML Pothole Detection System Starting...")
+    print("=" * 60)
+    print(f"🤖 ML Model: {'Loaded' if ml_detector and ml_detector.model else 'Rule-based fallback'}")
+    print(f"📱 Phone Address: {sensor_address}")
+    print("=" * 60)
+
+    # Start GPS WebSocket in a separate thread
+    gps_thread = threading.Thread(target=connect_gps, args=(gps_url,), daemon=True)
+    gps_thread.start()
+
+    # Start sensor WebSockets
+    Sensor(sensor_address, "android.sensor.accelerometer", on_accelerometer_event).connect()
+    Sensor(sensor_address, "android.sensor.gyroscope", on_gyroscope_event).connect()
+
+    print("🚀 Starting Flask server on http://0.0.0.0:5000")
+    socketio.run(app, host="0.0.0.0", port=5000, debug=False, use_reloader=False)

@@ -5,25 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Cleaned Repo">
-      <change afterPath="$PROJECT_DIR$/data/data_collector.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/data_preprocessor.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/dataset.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inference/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/inference/real_time_predictor.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main_ml.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/cnn_lstm_model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/model_utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/train_model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/trainer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/constants.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/process_dataset.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/acceloremeter_vis.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/data_collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/data_collector.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inference/real_time_predictor.py" beforeDir="false" afterPath="$PROJECT_DIR$/inference/real_time_predictor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main_ml.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_ml.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/cnn_lstm_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/cnn_lstm_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/trainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/trainer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/constants.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +153,7 @@
       <workItem from="1747662547114" duration="18000" />
       <workItem from="1749919968556" duration="37000" />
       <workItem from="1749920025175" duration="277000" />
-      <workItem from="1749922249598" duration="912000" />
+      <workItem from="1749922249598" duration="2541000" />
     </task>
     <task id="LOCAL-00001" summary="Files added">
       <option name="closed" value="true" />
