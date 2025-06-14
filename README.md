@@ -1,5 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" class="logo" width="120"/>
-
 # 🚗 CNN-LSTM Pothole Detection System
 
 A real-time pothole detection system using smartphone sensors (accelerometer \& gyroscope) with deep learning. This system collects real-world driving data, trains a CNN-LSTM model, and performs real-time pothole detection.
