@@ -21,8 +21,8 @@ A real-time pothole detection system using smartphone sensors (accelerometer \& 
 
 ```bash
 # 1. Clone and setup
-git clone <your-repo>
-cd pothole_detection_ml
+git clone https://github.com/ArunaK-netizen/PaveSense.git
+cd PaveSense
 pip install -r requirements.txt
 
 # 2. Collect real data (drive around and mark potholes)
@@ -45,7 +45,7 @@ python main_ml.py
 
 - Python 3.8+
 - PyTorch 1.9+
-- Smartphone with sensor streaming app
+- Smartphone with sensor streaming app (https://github.com/umer0586/SensorServer)
 - Same WiFi network for phone and computer
 
 
@@ -710,20 +710,31 @@ ensemble_pred = torch.mean(torch.stack(predictions), dim=0)
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📚 Citation
+[//]: # (## 📚 Citation)
 
-If you use this work in your research, please cite:
+[//]: # ()
+[//]: # (If you use this work in your research, please cite:)
 
-```bibtex
-@article{pothole_detection_2025,
-  title={Real-time Pothole Detection using CNN-LSTM and Smartphone Sensors},
-  author={Your Name},
-  journal={Transportation Research Part C},
-  year={2025},
-  volume={XX},
-  pages={XXX-XXX}
-}
-```
+[//]: # ()
+[//]: # (```bibtex)
+
+[//]: # (@article{pothole_detection_2025,)
+
+[//]: # (  title={Real-time Pothole Detection using CNN-LSTM and Smartphone Sensors},)
+
+[//]: # (  author={Your Name},)
+
+[//]: # (  journal={Transportation Research Part C},)
+
+[//]: # (  year={2025},)
+
+[//]: # (  volume={XX},)
+
+[//]: # (  pages={XXX-XXX})
+
+[//]: # (})
+
+[//]: # (```)
 
 
 ## 🔗 Related Work
@@ -736,8 +747,9 @@ If you use this work in your research, please cite:
 ## 📞 Support
 
 - **Issues**: Open GitHub issue
-- **Email**: your.email@domain.com
-- **Documentation**: [Wiki](https://github.com/your-repo/wiki)
+- **Email**: arundd2004@gmail.com
+
+[//]: # (- **Documentation**: [Wiki]&#40;https://github.com/your-repo/wiki&#41;)
 
 ---
 
