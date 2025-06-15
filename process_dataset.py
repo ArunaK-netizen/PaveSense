@@ -15,9 +15,9 @@ class DatasetProcessor:
         self.sequence_length = sequence_length
         self.scaler = StandardScaler()
 
-    def load_all_datasets(self, dataset_dir="datasets"):
+    def load_all_datasets(self, dataset_dir="dataset/useable/"):
         """Load and combine all collected datasets"""
-        csv_files = glob.glob(os.path.join(dataset_dir, "pothole_data_*.csv"))
+        csv_files = glob.glob(os.path.join(dataset_dir, "*.csv"))
 
         if not csv_files:
             raise ValueError("No dataset files found! Run data_collector.py first.")
@@ -47,12 +47,12 @@ class DatasetProcessor:
         print(f"Normal samples: {len(df) - sum(df['label'])} ({(len(df) - sum(df['label'])) / len(df) * 100:.1f}%)")
 
         # Duration
-        duration = (df['timestamp'].max() - df['timestamp'].min()) / 60
+        duration = (df['time'].max() - df['time'].min()) / 60
         print(f"Total duration: {duration:.1f} minutes")
 
         # Sensor statistics
         print(f"\nSensor Statistics:")
-        for col in ['accel_x', 'accel_y', 'accel_z', 'gyro_x', 'gyro_y', 'gyro_z']:
+        for col in ['acc_x', 'acc_y', 'acc_z', 'gyro_x', 'gyro_y', 'gyro_z']:
             print(
                 f"  {col}: mean={df[col].mean():.2f}, std={df[col].std():.2f}, range=[{df[col].min():.2f}, {df[col].max():.2f}]")
 
@@ -63,7 +63,7 @@ class DatasetProcessor:
         """Plot sensor data distributions"""
         fig, axes = plt.subplots(2, 3, figsize=(15, 10))
 
-        sensors = ['accel_x', 'accel_y', 'accel_z', 'gyro_x', 'gyro_y', 'gyro_z']
+        sensors = ['acc_x', 'acc_y', 'acc_z', 'gyro_x', 'gyro_y', 'gyro_z']
 
         for i, sensor in enumerate(sensors):
             row, col = i // 3, i % 3
@@ -79,7 +79,7 @@ class DatasetProcessor:
             ax.legend()
 
         plt.tight_layout()
-        plt.savefig('datasets/sensor_distributions.png', dpi=300, bbox_inches='tight')
+        plt.savefig('dataset/sensor_distributions.png', dpi=300, bbox_inches='tight')
         plt.show()
         print("📊 Sensor distributions saved to 'datasets/sensor_distributions.png'")
 
@@ -88,10 +88,10 @@ class DatasetProcessor:
         print(f"\n🔄 Creating sequences (length={self.sequence_length})...")
 
         # Sort by timestamp
-        df = df.sort_values('timestamp').reset_index(drop=True)
+        df = df.sort_values('time').reset_index(drop=True)
 
         # Extract sensor features
-        feature_columns = ['accel_x', 'accel_y', 'accel_z', 'gyro_x', 'gyro_y', 'gyro_z']
+        feature_columns = ['acc_x', 'acc_y', 'acc_z', 'gyro_x', 'gyro_y', 'gyro_z']
         sensor_data = df[feature_columns].values
         labels = df['label'].values
 

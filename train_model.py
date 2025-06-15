@@ -89,7 +89,7 @@ class RealDataTrainer:
 
         # Learning rate scheduler
         self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, mode='min', factor=0.5, patience=10, verbose=True
+            self.optimizer, mode='min', factor=0.5, patience=10
         )
 
         # Count parameters
@@ -228,7 +228,7 @@ class RealDataTrainer:
         print("\n📊 Evaluating model on test set...")
 
         # Load best model
-        checkpoint = torch.load('models/trained_pothole_model.pth')
+        checkpoint = torch.load('models/trained_pothole_model.pth', weights_only=False)
         self.model.load_state_dict(checkpoint['model_state_dict'])
 
         self.model.eval()
