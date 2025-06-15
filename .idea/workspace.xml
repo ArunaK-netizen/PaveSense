@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Modified README.md">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="cfe81325-5a65-4e0c-9df1-99d4b6e5aabe" name="Changes" comment="Dataset Collected and Model Trained">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/Data_Collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/old/Data_Collector.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/process_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/process_dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inference/real_time_predictor.py" beforeDir="false" afterPath="$PROJECT_DIR$/inference/real_time_predictor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main_ml.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_ml.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -151,7 +149,7 @@
       <workItem from="1749920025175" duration="277000" />
       <workItem from="1749922249598" duration="3691000" />
       <workItem from="1749926287397" duration="2023000" />
-      <workItem from="1749999823449" duration="2327000" />
+      <workItem from="1749999823449" duration="3414000" />
     </task>
     <task id="LOCAL-00001" summary="Files added">
       <option name="closed" value="true" />
@@ -305,7 +303,23 @@
       <option name="project" value="LOCAL" />
       <updated>1749926981719</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Dataset Collected and Model Trained">
+      <option name="closed" value="true" />
+      <created>1750004352743</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1750004352743</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Dataset Collected and Model Trained">
+      <option name="closed" value="true" />
+      <created>1750004399307</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1750004399307</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -336,7 +350,8 @@
     <MESSAGE value="ML model added" />
     <MESSAGE value="Modified data collection and ML model logic, added instructions in readme" />
     <MESSAGE value="Modified README.md" />
-    <option name="LAST_COMMIT_MESSAGE" value="Modified README.md" />
+    <MESSAGE value="Dataset Collected and Model Trained" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dataset Collected and Model Trained" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PaveSense$accuracyAtSpeeds.coverage" NAME="accuracyAtSpeeds Coverage Results" MODIFIED="1745408105556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

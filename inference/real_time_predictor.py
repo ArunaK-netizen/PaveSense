@@ -5,6 +5,13 @@ from collections import deque
 from data.dataset import RealTimeBuffer
 import os
 
+# Optional: Fix for numpy scalar issue (only needed if error appears again)
+try:
+    import numpy.core.multiarray
+    torch.serialization.add_safe_globals([numpy.core.multiarray.scalar])
+except Exception:
+    pass
+
 
 class IntegratedPotholeDetector:
     def __init__(self, model_path, sequence_length=50, confidence_threshold=0.7,
@@ -37,7 +44,7 @@ class IntegratedPotholeDetector:
             if os.path.exists(self.model_path):
                 from models.cnn_lstm_model import CNNLSTMPotholeDetector
 
-                checkpoint = torch.load(self.model_path, map_location=self.device)
+                checkpoint = torch.load(self.model_path, map_location=self.device, weights_only=False)
 
                 if 'model_config' in checkpoint:
                     config = checkpoint['model_config']
@@ -68,14 +75,11 @@ class IntegratedPotholeDetector:
 
     def process_sensor_data(self, accelerometer_values, gyroscope_values):
         """Process sensor data and make prediction"""
-        # Add data to buffer
         self.buffer.add_sample(accelerometer_values, gyroscope_values)
 
-        # Calculate magnitudes for fallback detection
-        accel_magnitude = np.sqrt(np.sum(np.array(accelerometer_values) ** 2))
-        gyro_magnitude = np.sqrt(np.sum(np.array(gyroscope_values) ** 2))
+        accel_magnitude = np.linalg.norm(accelerometer_values)
+        gyro_magnitude = np.linalg.norm(gyroscope_values)
 
-        # Use ML model if available and buffer is ready
         if self.model is not None and self.buffer.is_ready():
             try:
                 sequence = self.buffer.get_sequence(normalize=self.buffer.is_fitted)
@@ -85,15 +89,13 @@ class IntegratedPotholeDetector:
                     output = self.model(sequence)
                     confidence = output.item()
 
-                # Store prediction for smoothing
                 self.prediction_history.append(confidence)
-                smoothed_confidence = np.mean(list(self.prediction_history))
+                smoothed_confidence = np.mean(self.prediction_history)
 
-                # Determine if pothole is detected
                 current_time = time.time()
                 pothole_detected = (
-                        smoothed_confidence > self.confidence_threshold and
-                        (current_time - self.last_detection_time) > self.detection_cooldown
+                    smoothed_confidence > self.confidence_threshold and
+                    (current_time - self.last_detection_time) > self.detection_cooldown
                 )
 
                 if pothole_detected:
