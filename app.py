@@ -3,6 +3,7 @@ import json
 import numpy as np
 import threading
 import sqlite3
+import os
 from flask import Flask, render_template, jsonify
 from flask_socketio import SocketIO, emit
 from datetime import datetime
@@ -16,18 +17,30 @@ ACCEL_Z_RISE_THRESHOLD = 3.0
 GYRO_THRESHOLD = 1.5
 
 # Database configuration
-DB_FILE = "database/locations.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_DIR = os.path.join(BASE_DIR, "database")
+DB_FILE = os.path.join(DB_DIR, "locations.db")
 LOCATION_DISTANCE_THRESHOLD = 0.00005  # Approximately 5 meters in decimal degrees
 
 # Data storage
 sensor_data_buffer = {"accelerometer": [], "gyroscope": []}
 pothole_locations = []
+lat = None
+long = None
+browser_lat = None  # Fallback GPS from browser geolocation
+browser_long = None
 
 print("✅ Rule-Based Pothole Detection Active!")
 
 
 # Initialize database
 def init_db():
+    # Ensure the database directory exists before connecting
+    try:
+        os.makedirs(os.path.dirname(DB_FILE), exist_ok=True)
+    except Exception:
+        pass
+
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     cursor.execute("""
@@ -124,7 +137,12 @@ def on_gps_message(ws, message):
         data = json.loads(message)
         lat, long = data["latitude"], data["longitude"]
         lastKnownLocation = data.get("lastKnowLocation")
-        print(f"📍 GPS: ({lat}, {long}) response to getLastKnownLocation = {lastKnownLocation}")
+        print(f"✅ GPS RECEIVED: ({lat}, {long}) lastKnownLocation = {lastKnownLocation}")
+        # Broadcast GPS updates to connected web clients
+        try:
+            socketio.emit("gps_update", {"latitude": lat, "longitude": long})
+        except Exception:
+            pass
     except Exception as e:
         print(f"❌ Error processing GPS message: {e}")
 
@@ -142,14 +160,41 @@ def on_gps_open(ws):
     ws.send("getLastKnowLocation")  # Request GPS location
 
 
+def send_gps_requests(ws, stop_event):
+    """Periodically send getLastKnownLocation to keep GPS updates flowing."""
+    from time import sleep
+    print("📍 GPS request thread started, will send getLastKnownLocation every 1 second")
+    while not stop_event.is_set():
+        try:
+            if ws:
+                ws.send("getLastKnowLocation")
+                print("📍 Sent getLastKnownLocation request")
+        except Exception as e:
+            print(f"⚠️ Error sending GPS request: {e}")
+        sleep(1)  # Request every 1 second
+
+
 def connect_gps(url):
     """Establish GPS WebSocket connection"""
+    gps_stop_event = threading.Event()
     ws = websocket.WebSocketApp(url,
                                 on_open=on_gps_open,
                                 on_message=on_gps_message,
                                 on_error=on_gps_error,
                                 on_close=on_gps_close)
-    ws.run_forever()
+    
+    # Start thread to periodically request GPS location
+    gps_request_thread = threading.Thread(
+        target=send_gps_requests,
+        args=(ws, gps_stop_event),
+        daemon=True
+    )
+    gps_request_thread.start()
+    
+    try:
+        ws.run_forever()
+    finally:
+        gps_stop_event.set()
 
 
 # Sensor class for handling accelerometer and gyroscope
@@ -195,7 +240,7 @@ class Sensor:
 
 # Pothole detection algorithm
 def process_sensor_data():
-    global lat, long
+    global lat, long, browser_lat, browser_long
 
     if len(sensor_data_buffer["accelerometer"]) < 2 or len(sensor_data_buffer["gyroscope"]) < 1:
         return
@@ -227,10 +272,22 @@ def process_sensor_data():
         print(f" - Z-axis absolute: {np.abs(accel_current[2]):.2f} > {ACCEL_Z_RISE_THRESHOLD}")
         print(f" - Gyro variance: {gyro_variance:.2f} > {GYRO_THRESHOLD}")
 
-        # Add to database and emit to frontend if not a duplicate
-        if add_location(lat, long, "pothole"):
-            pothole_locations.append((lat, long))
-            socketio.emit("update_map", {"latitude": lat, "longitude": long, "type": "pothole"})
+        # Use mobile GPS if available, fallback to browser GPS
+        final_lat = lat if lat is not None else browser_lat
+        final_long = long if long is not None else browser_long
+
+        if final_lat is None or final_long is None:
+            print("⚠️ No GPS available (mobile or browser) — skipping DB insert for detected pothole")
+        else:
+            try:
+                lat_f = float(final_lat)
+                long_f = float(final_long)
+            except Exception:
+                print(f"⚠️ Invalid GPS values, skipping DB insert: lat={final_lat}, long={final_long}")
+            else:
+                if add_location(lat_f, long_f, "pothole"):
+                    pothole_locations.append((lat_f, long_f))
+                    socketio.emit("update_map", {"latitude": lat_f, "longitude": long_f, "type": "pothole"})
     else:
         print("No events detected")
 
@@ -241,7 +298,7 @@ def process_sensor_data():
 @app.route("/")
 def index():
     print("🖥️ Rendering index.html")
-    return render_template("./index.html")
+    return render_template("index.html")
 
 
 @app.route("/api/locations")
@@ -261,9 +318,9 @@ def get_locations():
 def handle_connect():
     """Send all stored locations to newly connected clients"""
     locations = get_all_locations()
-    for lat, lng, loc_type in locations:
+    for lat_val, lng, loc_type in locations:
         socketio.emit("update_map", {
-            "latitude": lat,
+            "latitude": lat_val,
             "longitude": lng,
             "type": loc_type,
             "isHistorical": True
@@ -271,13 +328,26 @@ def handle_connect():
     print(f"📊 Sent {len(locations)} historical locations to client")
 
 
+@socketio.on('browser_gps')
+def handle_browser_gps(data):
+    """Receive GPS from browser geolocation as fallback"""
+    global browser_lat, browser_long
+    try:
+        browser_lat = data.get("latitude")
+        browser_long = data.get("longitude")
+        if browser_lat and browser_long:
+            print(f"💻 Browser GPS received: ({browser_lat}, {browser_long})")
+    except Exception as e:
+        print(f"⚠️ Error processing browser GPS: {e}")
+
+
 # Start WebSocket Connections and Flask Server
 if __name__ == "__main__":
     # Initialize database
     init_db()
 
-    sensor_address = ("192.168.1.37:8080")
-    gps_url = "ws://192.168.1.37:8080/gps"
+    sensor_address = ("192.168.68.104:8080")
+    gps_url = "ws://192.168.68.104:8080/gps"
 
     print("🛠️ Starting WebSocket connections...")
 

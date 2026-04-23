@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PaveSense Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body, html { height: 100%; margin: 0; }
+    #map { height: 100vh; width: 100%; }
+    .legend { background: white; padding: 6px; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    const socket = io();
+
+    const map = L.map('map').setView([0, 0], 2);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const potholeIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/69/69524.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32]
+    });
+
+    let gpsMarker = null;
+    let browserGpsMarker = null;
+
+    function addPothole(lat, lng, isHistorical=false) {
+      const marker = L.marker([lat, lng], {icon: potholeIcon}).addTo(map);
+      marker.bindPopup(isHistorical ? 'Historic Pothole' : 'New Pothole');
+      if (!isHistorical) {
+        map.setView([lat, lng], 17);
+      }
+    }
+
+    // Get browser geolocation and send to server
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(
+        (position) => {
+          const browserLat = position.coords.latitude;
+          const browserLng = position.coords.longitude;
+          console.log(`Browser GPS: (${browserLat}, ${browserLng})`);
+          socket.emit('browser_gps', {latitude: browserLat, longitude: browserLng});
+          
+          // Show browser GPS on map
+          if (!browserGpsMarker) {
+            browserGpsMarker = L.circleMarker([browserLat, browserLng], {radius:10, color:'#238823', fillColor:'#28a745', fillOpacity:0.9, weight:2}).addTo(map);
+            browserGpsMarker.bindPopup('Browser GPS (Laptop)');
+            map.setView([browserLat, browserLng], 13);
+          } else {
+            browserGpsMarker.setLatLng([browserLat, browserLng]);
+          }
+        },
+        (error) => {
+          console.warn('Browser geolocation error:', error);
+        }
+      );
+    }
+
+    // Load historic locations via API
+    fetch('/api/locations')
+      .then(r => r.json())
+      .then(data => {
+        if (!Array.isArray(data)) return;
+        data.forEach(loc => {
+          addPothole(loc.latitude, loc.longitude, true);
+        });
+        if (data.length > 0) {
+          const first = data[0];
+          map.setView([first.latitude, first.longitude], 13);
+        }
+      }).catch(console.error);
+
+    // Listen for pothole updates from server
+    socket.on('update_map', (payload) => {
+      if (!payload) return;
+      const {latitude, longitude, type, isHistorical} = payload;
+      if (type === 'pothole') addPothole(latitude, longitude, !!isHistorical);
+    });
+
+    // Listen for GPS live updates (mobile)
+    socket.on('gps_update', (payload) => {
+      if (!payload) return;
+      const {latitude, longitude} = payload;
+      if (!latitude || !longitude) return;
+      if (!gpsMarker) {
+        gpsMarker = L.circleMarker([latitude, longitude], {radius:10, color:'#0b5cff', fillColor:'#0d6efd', fillOpacity:0.9, weight:2}).addTo(map);
+        gpsMarker.bindPopup('Mobile Device GPS');
+        map.setView([latitude, longitude], 17);
+      } else {
+        gpsMarker.setLatLng([latitude, longitude]);
+      }
+    });
+
+  </script>
+</body>
+</html>
